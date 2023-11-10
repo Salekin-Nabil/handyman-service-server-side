@@ -3,8 +3,6 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-var nodemailer = require('nodemailer');
-// var sgTransport = require('nodemailer-sendgrid-transport');
 
 const app = express();
 const port = process.env.PORT || 7000;
@@ -34,7 +32,7 @@ const client = new MongoClient(uri, {
 
     const token = authHeader.split(' ')[1];
 
-    jwt.verify(token, process.env.Access_TOKEN_SECRET, function (err, decoded) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
         if (err) {
             return res.status(403).send({ message: 'forbidden access' })
         }
@@ -43,42 +41,6 @@ const client = new MongoClient(uri, {
     })
 
 }
-
-function sendBookingEmail(booking){
-    const { email, service, appointmentDate, slot } = booking;
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: "salekinnabil@gmail.com",
-            pass: process.env.User_Pass
-        }
-    })
-    
-    const mailOptions = {
-        from: "salekinnabil@gmail.com",
-        to: email || "salekinnabil@gmail.com",
-        subject: `Your appointment for ${service} is confirmed`, // Subject line
-        text: `Your appointment for ${service} is confirmed`, // plain text body
-        html: `
-        <h3>Your appointment is confirmed</h3>
-        <div>
-            <p>Your appointment for service: ${service}</p>
-            <p>Please visit us on ${appointmentDate} at ${slot}</p>
-            <p>Thanks from Doctors Portal.</p>
-        </div>
-        `, // html body
-    }
-
-    transporter.sendMail(mailOptions, function(error, info){
-        if (error){
-            console.log(error);
-        }
-        else {
-            console.log("Email sent: "+info.response);
-        }
-    })
-}
-
 
 async function run() {
   try {
@@ -140,8 +102,6 @@ async function run() {
     }
 
     const result = await bookingsCollection.insertOne(booking);
-    // send email about appointment confirmation 
-    // sendBookingEmail(booking)
     res.send(result);
 });
 
@@ -235,7 +195,7 @@ app.put("/user/:email", async(req,res) =>{
         $set: user,
     };
     const result = await usersCollection.updateOne(filter, updateDoc, options);
-    const token = jwt.sign({email: email}, process.env.Access_TOKEN_SECRET, {expiresIn: '1h'});
+    const token = jwt.sign({email: email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'});
     res.send({result, token});
 });
 

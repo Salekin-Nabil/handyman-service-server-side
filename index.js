@@ -47,11 +47,11 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("handyman_service").command({ ping: 1 });
-    const serviceCollection = client.db('handyman_service').collection('services');
-    const reviewCollection = client.db('handyman_service').collection('reviews');
-    const bookingsCollection = client.db('handyman_service').collection('bookings');
-    const usersCollection = client.db('handyman_service').collection('users');
+    await client.db("quick_med").command({ ping: 1 });
+    const serviceCollection = client.db('quick_med').collection('services');
+    const reviewCollection = client.db('quick_med').collection('reviews');
+    const bookingsCollection = client.db('quick_med').collection('bookings');
+    const usersCollection = client.db('quick_med').collection('users');
 
     const verifyAdmin = async (req, res, next) => {
         const decodedEmail = req.decoded.email;
@@ -247,8 +247,8 @@ app.put('/reviews/:email', async (req, res) => {
   });
 
   //Reviews GET API latest 6 reviews
-  app.get('/reviews_6', async (req, res)=>{
-    const cursor = reviewCollection.find({}).sort({_id:-1}).limit(6);
+  app.get('/reviews_3', async (req, res)=>{
+    const cursor = reviewCollection.find({}).sort({_id:-1}).limit(3);
     const reviews = await cursor.toArray();
     res.send(reviews);
 });
@@ -284,9 +284,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello From Handyman own portal!')
+  res.send('Hello From QuickMed own portal!')
 })
 
 app.listen(port, () => {
-  console.log(`Handyman App listening on port ${port}`)
+  console.log(`QuickMed App listening on port ${port}`)
 })
